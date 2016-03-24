@@ -7,7 +7,7 @@ services:
     labels:
       traefik.enable: "false"
   rocketchat:
-    container_name: uds2-rocketchat
+    #container_name: uds2-rocketchat
     image: rocketchat/rocket.chat:latest
     environment:
       - PORT=3000
@@ -15,8 +15,8 @@ services:
       - MONGO_URL=mongodb://uds2-mongodb:27017/rocketchat
     links:
       - mongo:uds2-mongodb
-    ports:
-      - "3000:3000"
+    #ports:
+    #  - "3000:3000"
     labels:
       traefik.backend: "rocketchat"
   hubot:
