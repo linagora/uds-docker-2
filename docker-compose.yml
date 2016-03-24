@@ -1,0 +1,6 @@
+version: '2'
+services:
+  mongo:
+    container_name: uds2-mongodb
+    image: mongo
+    command: mongod --smallfiles --oplogSize 128
