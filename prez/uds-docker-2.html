@@ -113,6 +113,7 @@
       }
       img[alt=DockerTitleLogo] { width: 300px; }
       img[alt=LinagoraLogo] { margin-bottom: 20px; }
+      img[alt=DockerImage] { margin: 0 18%; }
       img[alt=ScreenshotRobomongo] {width: 750px; }
       img[alt=ScreenshotRocketChat] {width: 650px; }
       img[alt=ScreenshotHubot] {width: 750px; }
@@ -127,6 +128,159 @@ layout: true
 class: center, middle, inverse
 ---
 # Mise en pratique de Docker
+![DockerTitleLogo](http://palletops.com/images/docker-large-h-trans.png)
+![LinagoraLogo](https://www.linagora.com/sites/all/themes/tux/logo.png)
+### par [Bastien MENNESSON](mailto:bmennesson@linagora.com)
+.footnote[Universités du savoir<br />.red[©] [Linagora](https://www.linagora.com) 2016]
+---
+template: inverse
+# Rappels
+---
+
+layout: false
+# Docker
+
+![Docker](http://i.imgur.com/oFsWfox.png)
+
+---
+layout: false
+# Sous le capot
+
+![UnderTheHood](http://www.cloudini.fr/wp-content/uploads/2015/09/what-is-vm-diagram.png)
+---
+layout: false
+# L ' écosystème
+
+![DockerEcosystem](http://i.imgur.com/AmIWLIF.png?1)
+
+---
+layout: false
+# Avantages d'une infrastructure Docker
+
+![DockerInfrastructure](http://i.imgur.com/7pKa4CK.png?1)
+
+---
+
+template: inverse
+# Déploiement d'une application web </br><br/> avec Apache2
+
+![ApacheLogo](https://3.bp.blogspot.com/-apfAshfC7Yg/VtiTgoBDaUI/AAAAAAAAFlk/Bw-O6RI2cFY/s1600/logo%2Bapache.png)
+
+---
+
+layout: false
+# Apache2 sous Docker
+
+- Disponible sur hub.docker.com
+- Image officielle, maintenue par la Fondation Apache
+
+Pour la récupérer, rien de plus simple :
+
+```.bash
+$ docker pull httpd:2.4
+
+fdd5d7827f33: Already exists
+a3ed95caeb02: Pull complete
+6dda107bf71b: Pull complete
+86e2da0d8a9f: Pull complete
+6acf2ff123fe: Pull complete
+94a268baee66: Pull complete
+Digest: sha256:8430a8282444980c334b569ca04a76a92a49e5cb3a5f759aa34e5458acbd506b
+Status: Downloaded newer image for httpd:2.4
+
+$ docker images
+
+REPOSITORY          TAG         IMAGE ID        CREATED         SIZE
+httpd               2.4         d10e4c3e7ec9    2 weeks ago     193.3 MB
+```
+
+---
+
+layout: false
+# Notre application
+Les sources (page d'exemple de Boostrap)
+
+```.bash
+$ ls ~/my-project
+bootstrap  index.html  theme.css
+```
+
+La commande suivante va :
+- lancer un conteneur Apache2
+- copier notre projet au sein du conteneur
+- rendre le conteneur accessible sur le réseau
+
+```.bash
+$ docker run -ti --rm \
+         --port 80:80 \
+         --volume ~/my-project:/usr/local/apache2/htdocs/ \
+         httpd:2.4
+```
+
+Notre application est maintenant disponible à l'adresse http://localhost.
+
+---
+template: inverse
+![DockerApache](http://i.imgur.com/PDAE5ad.png)
+---
+
+layout: false
+# Créons notre propre image
+
+Pourquoi ?
+- Moyen simple de packager notre application
+- Diffusion facilitée grâce à Docker Hub
+- Versionnement possible
+- Peut servir de base à une autre image
+
+Comment ?
+- Création d'un ficher Dockerfile
+
+![DockerImage](http://i.imgur.com/Xk4YTTF.jpg?1)
+---
+layout: false
+# Dockerfile
+
+```.dockerfile
+# On souhaite utiliser l'image de base Apache2
+FROM httpd:2.4
+
+# La personne en charge de la maintenance
+MAINTAINER Bastien MENNESSON <bmennesson@linagora.com>
+
+# On installe les paquets nécessaire
+RUN apt-get update && apt-get install wget bsdtar -y
+
+# On se déplace dans le répertoire d'Apache2
+WORKDIR /usr/local/apache2/htdocs
+
+# On copie nos sources dans ce répertoire
+COPY . .
+
+# On télécharge Bootstrap puis on l'extrait
+RUN wget -nc -O - https://goo.gl/2ShDu4 | bsdtar -xvf- && \
+    mv bootstrap-3.3.6-dist bootstrap
+```
+
+Il ne reste plus qu'à créer l'image :
+
+```.bash
+$ docker build -t bastienm/uds-exemple .
+```
+
+---
+layout: false
+# Place au test
+
+```.bash
+$ docker run -ti --rm -p 80:80 bastienm/uds-exemple
+```
+
+![DockerApache2](http://i.imgur.com/PDAE5ad.png)
+
+---
+template: inverse
+# Workshop : Composition
 ![DockerTitleLogo](http://palletops.com/images/docker-large-h-trans.png)
 ![LinagoraLogo](https://www.linagora.com/sites/all/themes/tux/logo.png)
 ### par [Thomas Sarboni](mailto:tsarboni@linagora.com)
@@ -426,7 +580,7 @@ services:
 template: inverse
 ## Notre environnement est fonctionnel
 ---
-### RochetChat
+### Hubot
 ![ScreenshotHubot](Hubot.png)
 ---
 template: inverse
