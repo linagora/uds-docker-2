@@ -4,6 +4,8 @@ services:
     container_name: uds2-mongodb
     image: mongo
     command: mongod --smallfiles --oplogSize 128
+    labels:
+      traefik.enable: "false"
   rocketchat:
     container_name: uds2-rocketchat
     image: rocketchat/rocket.chat:latest
@@ -15,6 +17,8 @@ services:
       - mongo:uds2-mongodb
     ports:
       - "3000:3000"
+    labels:
+      traefik.backend: "rocketchat"
   hubot:
     container_name: usds2-hubot
     image: rocketchat/hubot-rocketchat
@@ -28,4 +32,15 @@ services:
     depends_on:
       - rocketchat
     ports:
-      - 3001:8080
+      - 3001:3001
+    labels:
+      traefik.enable: "false"
+  traefik:
+    container_name: uds2-traefik
+    image: containous/traefik
+    volumes:
+      - $PWD/traefik.toml:/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+      - "8080:8080"
