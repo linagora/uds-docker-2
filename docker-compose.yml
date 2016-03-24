@@ -4,3 +4,14 @@ services:
     container_name: uds2-mongodb
     image: mongo
     command: mongod --smallfiles --oplogSize 128
+  rocketchat:
+    container_name: uds2-rocketchat
+    image: rocketchat/rocket.chat:latest
+    environment:
+      - PORT=3000
+      - ROOT_URL=http://localhost:3000
+      - MONGO_URL=mongodb://uds2-mongodb:27017/rocketchat
+    links:
+      - mongo:uds2-mongodb
+    ports:
+      - "3000:3000"
