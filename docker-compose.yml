@@ -6,6 +6,8 @@ services:
     command: mongod --smallfiles --oplogSize 128
     labels:
       traefik.enable: "false"
+    networks:
+      - uds2-backend
   rocketchat:
     #container_name: uds2-rocketchat
     image: rocketchat/rocket.chat:latest
@@ -19,6 +21,9 @@ services:
     #  - "3000:3000"
     labels:
       traefik.backend: "rocketchat"
+    networks:
+      - uds2-backend
+      - uds2-frontend
   hubot:
     container_name: usds2-hubot
     image: rocketchat/hubot-rocketchat
@@ -35,6 +40,8 @@ services:
       - 3001:3001
     labels:
       traefik.enable: "false"
+    networks:
+      - uds2-backend
   traefik:
     container_name: uds2-traefik
     image: containous/traefik
@@ -44,3 +51,10 @@ services:
     ports:
       - "80:80"
       - "8080:8080"
+    networks:
+      - uds2-frontend
+networks:
+  uds2-backend:
+    driver: bridge
+  uds2-frontend:
+    driver: bridge
