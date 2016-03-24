@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Introduction to Docker - french - @LINAGORA 2016/02/18</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-slide-content h1 { font-size: 3em; }
+      .remark-slide-content h2 { font-size: 2em; }
+      .remark-slide-content h3 { font-size: 1.6em; }
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+      }
+      li p { line-height: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      a, a > code {
+        color: rgb(249, 38, 114);
+        text-decoration: none;
+      }
+      code {
+        background: #e7e8e2;
+        border-radius: 5px;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-code-line-highlighted     { background-color: #373832; }
+      .pull-left {
+        float: left;
+        width: 47%;
+      }
+      .pull-right {
+        float: right;
+        width: 47%;
+      }
+      .pull-right ~ p {
+        clear: both;
+      }
+      #slideshow .slide .content code {
+        font-size: 0.8em;
+      }
+      #slideshow .slide .content pre code {
+        font-size: 0.9em;
+        padding: 15px;
+      }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 0.8em;
+      }
+
+      /* Slide-specific styling */
+      #slide-inverse .footnote {
+        bottom: 12px;
+        left: 20px;
+      }
+      #slide-how .slides {
+        font-size: 0.9em;
+        position: absolute;
+        top:  151px;
+        right: 140px;
+      }
+      #slide-how .slides h3 {
+        margin-top: 0.2em;
+      }
+      #slide-how .slides .first, #slide-how .slides .second {
+        padding: 1px 20px;
+        height: 90px;
+        width: 120px;
+        -moz-box-shadow: 0 0 10px #777;
+        -webkit-box-shadow: 0 0 10px #777;
+        box-shadow: 0 0 10px #777;
+      }
+      #slide-how .slides .first {
+        background: #fff;
+        position: absolute;
+        top: 20%;
+        left: 20%;
+        z-index: 1;
+      }
+      #slide-how .slides .second {
+        position: relative;
+        background: #fff;
+        z-index: 0;
+      }
+
+      /* Two-column layout */
+      .left-column {
+        color: #777;
+        width: 20%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 75%;
+        float: right;
+        padding-top: 1em;
+      }
+      img[alt=DockerTitleLogo] { width: 300px; }
+      img[alt=LinagoraLogo] { margin-bottom: 20px; }
+      img[alt=ScreenshotRobomongo] {width: 750px; }
+      img[alt=ScreenshotRocketChat] {width: 650px; }
+      img[alt=ScreenshotHubot] {width: 750px; }
+      img[alt=ScreenshotTraefik] {width: 700px; }
+      img[alt=ScreenshotScale] {width: 500px; margin-left: 100px; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+name: inverse
+layout: true
+class: center, middle, inverse
+---
+# Mise en pratique de Docker
+![DockerTitleLogo](http://palletops.com/images/docker-large-h-trans.png)
+![LinagoraLogo](https://www.linagora.com/sites/all/themes/tux/logo.png)
+### par [Thomas Sarboni](mailto:tsarboni@linagora.com)
+.footnote[Universités du savoir<br />.red[©] [Linagora](https://www.linagora.com) 2016]
+---
+# Applications multi-tenants
+---
+layout: false
+# Les enjeux
+.left-column[
+  ## Micro-services
+]
+.right-column[
+
+- Composants réutilisables
+ 
+- Facilité de maintenance
+
+- Gestion autonome du cycle de vie
+
+- Gestion autonome de la mise à l'échelle
+
+- Gestion autonome des ressources
+ ]
+---
+# Les enjeux
+.left-column[
+  ## Micro-services
+  ## Collaboration
+]
+.right-column[
+
+- Noms de domaines
+
+- Gestion du réseau
+
+- Gestion des dépendences
+]
+---
+# Les enjeux
+.left-column[
+  ## Micro-services
+  ## Collaboration
+  ## Sécurité
+]
+.right-column[
+
+- limitation des ressources
+
+- isolation
+]
+---
+template: inverse
+# Un exemple concret : Rocket.Chat
+
+![RocketChat](https://camo.githubusercontent.com/10d84b7d3ba2cff5cef0736152dd6792a38ea511/68747470733a2f2f726f636b65742e636861742f696d616765732f6c6f676f2f6c6f676f2d6461726b2e7376673f7633)
+---
+template: inverse
+# Les images
+---
+## Les images Docker
+
+- Peuvent êtres basées sur d'autres images
+
+- Peuvent être versionnées
+
+- Composées de couches réutilisables
+
+## Docker Hub
+
+- Catalogue public d'images
+
+- Images officielles
+
+- Ouvert aux contributions
+---
+## Les images du TP
+
+- [https://hub.docker.com/_/mongo/](https://hub.docker.com/_/mariadb/)
+
+- [https://hub.docker.com/r/rocketchat/rocket.chat/](https://hub.docker.com/r/rocketchat/rocket.chat/)
+
+- [https://hub.docker.com/r/rocketchat/hubot-rocketchat/](https://hub.docker.com/r/rocketchat/hubot-rocketchat/)
+
+## En bonus
+
+- [https://hub.docker.com/r/containous/traefik/](https://hub.docker.com/r/containous/traefik/)
+
+## Téléchargeons nos images
+
+```.bash
+docker pull mariadb rocketchat/rocket.chat rocketchat/hubot-rocketchat \
+containous/traefik
+```
+---
+template: inverse
+# Docker-compose
+---
+## Définition
+
+* Configuration centralisé d'un ensemble de conteneurs
+
+* Gestion des dépendances
+
+* Gestion de la communication inter-conteneur
+
+## Caractéristiques
+
+* Configuration centralisée au format YAML
+
+* Ecrit en Python
+---
+template: inverse
+# Python virtualenvs (interlude)
+---
+## Définition
+
+* Environement Python isolé
+
+* Permet d'installer des modules sans interférer avec les modules système
+
+## Création de notre virtualenv
+
+```.bash
+virtualenv --no-site-packages $(pwd)/env
+```
+
+```.bash
+Using base prefix '/usr'
+New python executable in /home/tsarboni/uds2/env/bin/python3
+Also creating executable in /home/tsarboni/uds2/env/bin/python
+Installing setuptools, pip, wheel...done.
+```
+
+## Activation du virtualenv
+
+```.bash
+. env/bin/activate
+```
+---
+## Installation de docker-compose
+
+```.bash
+pip install docker-compose
+```
+
+```.bash
+Collecting docker-compose
+Collecting jsonschema<3,>=2.5.1 (from docker-compose)
+  Using cached jsonschema-2.5.1-py2.py3-none-any.whl
+Collecting cached-property<2,>=1.2.0 (from docker-compose)
+  Using cached cached_property-1.3.0-py2.py3-none-any.whl
+Collecting docker-py<2,>=1.7.0 (from docker-compose)
+Collecting six<2,>=1.3.0 (from docker-compose)
+  Using cached six-1.10.0-py2.py3-none-any.whl
+Collecting texttable<0.9,>=0.8.1 (from docker-compose)
+Collecting websocket-client<1.0,>=0.32.0 (from docker-compose)
+Collecting dockerpty<0.5,>=0.4.1 (from docker-compose)
+Collecting PyYAML<4,>=3.10 (from docker-compose)
+Collecting requests<2.8,>=2.6.1 (from docker-compose)
+  Using cached requests-2.7.0-py2.py3-none-any.whl
+Collecting docopt<0.7,>=0.6.1 (from docker-compose)
+Installing collected packages: jsonschema, cached-property, six, websocket-client, requests, docker-py, texttable, dockerpty, PyYAML, docopt, docker-compose
+Successfully installed PyYAML-3.11 cached-property-1.3.0 docker-compose-1.6.2 docker-py-1.7.2 dockerpty-0.4.1 docopt-0.6.2 jsonschema-2.5.1 requests-2.7.0 six-1.10.0 texttable-0.8.4 websocket-client-0.35.0
+```
+---
+template: inverse
+# Fichier docker-compose.yml
+---
+## Trois composants principaux
+
+- Service
+
+- Reseaux
+
+- Volumes
+
+## Attention, version 2
+
+- Changement de format depuis la version 1.6 et Docker 1.10.
+
+Les fichiers doivent conternir le block suivant sur la première ligne :
+
+```.bash
+version: '2'
+```
+---
+template: inverse
+# Notre premier service : MongoDB
+---
+## Le fichier docker-compose.yml
+
+```.yml
+version: '2'
+services:
+  mongo:
+    container_name: uds2-mongodb
+    image: mongo
+    command: mongod --smallfiles --oplogSize 128
+```
+
+## Jouons un peu avec
+
+- Démarrage
+
+```.bash
+docker-compose up -d
+```
+
+- Nettoyage
+
+```.bash
+docker-compose down
+```
+---
+template: inverse
+## Notre environnement est fonctionnel
+---
+### Robomongo
+![ScreenshotRobomongo](Robomongo.png)
+---
+template: inverse
+# Un peu de pratique
+
+## Quelques commandes
+.footnote[
+docker ps
+
+docker-compose up -d
+
+docker-compose logs
+]
+---
+template: inverse
+# Ajoutons un conteneur : Rocket.Chat
+---
+## Le service
+
+```.yml
+services:
+#[...]
+  rocketchat:
+    container_name: uds2-rocketchat
+    image: rocketchat/rocket.chat:latest
+    environment:
+      - PORT=3000
+      - ROOT_URL=http://localhost:3000
+      - MONGO_URL=mongodb://uds2-mongodb:27017/rocketchat
+    links:
+      - mongo:uds2-mongodb
+    ports:
+      - "3000:3000"
+```
+---
+template: inverse
+# Encore un peu de pratique
+
+## Quelques commandes
+.footnote[
+docker exec -ti
+
+docker-compose kill
+
+docker-compose rm
+]
+---
+template: inverse
+## Notre environnement est fonctionnel
+---
+### RochetChat
+![ScreenshotRocketChat](Rocketchat.png)
+---
+template: inverse
+# Ajoutons encore un conteneur : Hubot
+---
+## Le service
+
+```.yml
+services:
+#[...]
+  hubot:
+    container_name: usds2-hubot
+    image: rocketchat/hubot-rocketchat
+    environment:
+      - ROCKETCHAT_URL=uds2-rocketchat:3000
+      - ROCKETCHAT_ROOM=GENERAL
+      - ROCKETCHAT_USER=bot
+      - ROCKETCHAT_PASSWORD=botpassword
+      - BOT_NAME=bot
+      - EXTERNAL_SCRIPTS=hubot-help,hubot-seen,hubot-links,hubot-diagnostics
+    depends_on:
+      - rocketchat
+    ports:
+      - 3001:8080
+```
+---
+template: inverse
+## Notre environnement est fonctionnel
+---
+### RochetChat
+![ScreenshotHubot](Hubot.png)
+---
+template: inverse
+# Un petit bonus : Traefik
+---
+## Le service
+
+```.yml
+services:
+#[...]
+  traefik:
+    container_name: uds2-traefik
+    image: containous/traefik
+    volumes:
+      - $PWD/traefik.toml:/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+      - "8080:8080"
+```
+
+## Les labels
+
+```.yml
+services:
+  rocketchat:
+    labels:
+      - traefik.backend: "rocketchat"
+```
+---
+## Les labels (suite)
+
+```.yml
+services:
+#[...]
+  mongo:
+    labels:
+      traefik.enable: false
+  hubot:
+    labels:
+      traefik.enable: false
+```
+
+## Fichier de configuration
+
+```.toml
+# Web configuration backend
+[web]
+address = ":8080"
+# Docker configuration backend
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "docker.localhost"
+watch = true
+```
+---
+template: inverse
+## Notre environnement est fonctionnel
+---
+### Traefik
+![ScreenshotTraefik](Traefik.png)
+---
+template: inverse
+# Mise à l'échelle
+---
+## Mise à jour du fichier docker-compose.yml
+
+```.yml
+services:
+  rocketchat:
+    #container_name: uds2-rocketchat
+    #ports:
+    #  - "3000:3000"
+```
+
+## Passage à l'échelle avec Docker-compose
+
+```.bash
+docker-compose scale rocketchat=2
+```
+---
+### Mise à jour des backends
+![ScreenshotScale](Scale.png)
+---
+template: inverse
+# Isolation : Les réseaux
+---
+## Mise à jour du fichier docker-compose.yml
+
+```.yml
+services:
+  rocketchat:
+    networks:
+      - uds2-frontend
+      - uds2-backend
+#[...]
+networks:
+  uds2-backend:
+    driver: bridge
+  uds2-frontend:
+    driver: bridge
+```
+---
+template: inverse
+## Notre environnement est fonctionnel
+---
+### On re-check dans Traefik
+![ScreenshotScale](Scale.png)
+---
+name: last-page
+template: inverse
+## That's all folks (for now)!
+
+Slideshow created using [remark](http://github.com/gnab/remark).
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
